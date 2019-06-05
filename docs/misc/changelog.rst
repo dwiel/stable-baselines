@@ -29,6 +29,7 @@ Pre-Release 2.6.0a0 (WIP)
 - **important change** switched to using dictionaries rather than lists when storing parameters, with tensorflow Variable names being the keys. (@Miffyli)
 - added specific hyperparameter for PPO2 to clip the value function (``cliprange_vf``)
 - fixed ``num_timesteps`` (total_timesteps) variable in PPO2 that was wrongly computed.
+- added support for python lists and numpy arrays in ``logger.writekvs``.
 
 **Breaking Change:** DDPG replay buffer was unified with DQN/SAC replay buffer. As a result,
 when loading a DDPG model trained with stable_baselines<2.6.0, it throws an import error.
