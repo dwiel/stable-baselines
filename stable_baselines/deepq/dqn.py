@@ -229,7 +229,7 @@ class DQN(OffPolicyRLModel):
                     episode_rewards.append(0.0)
                     reset = True
 
-                # Do no train if the warmup phase is not over
+                # Do not train if the warmup phase is not over
                 # or if there are not enough samples in the replay buffer
                 can_sample = self.replay_buffer.can_sample(self.batch_size)
                 if can_sample and self.num_timesteps > self.learning_starts \
