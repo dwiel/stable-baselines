@@ -31,7 +31,7 @@ Pre-Release 2.6.0a0 (WIP)
 - fixed ``num_timesteps`` (total_timesteps) variable in PPO2 that was wrongly computed.
 - fixed a bug in DDPG/DQN/SAC, when there were the number of samples in the replay buffer was lesser than the batch size
   (thanks to @dwiel for spotting the bug)
-- added support for python lists and numpy arrays in ``logger.writekvs``.
+- added support for python lists and numpy arrays in ``logger.writekvs``. (@dwiel)
 
 **Breaking Change:** DDPG replay buffer was unified with DQN/SAC replay buffer. As a result,
 when loading a DDPG model trained with stable_baselines<2.6.0, it throws an import error.
