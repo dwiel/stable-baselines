@@ -10,7 +10,7 @@ from stable_baselines.common.vec_env import VecEnv
 from stable_baselines.common.schedules import LinearSchedule
 from stable_baselines.deepq.replay_buffer import ReplayBuffer, PrioritizedReplayBuffer
 from stable_baselines.deepq.policies import DQNPolicy
-from stable_baselines.a2c.utils import find_trainable_variables, total_episode_reward_logger
+from stable_baselines.a2c.utils import total_episode_reward_logger
 
 
 class DQN(OffPolicyRLModel):
@@ -134,7 +134,7 @@ class DQN(OffPolicyRLModel):
                     full_tensorboard_log=self.full_tensorboard_log
                 )
                 self.proba_step = self.step_model.proba_step
-                self.params = find_trainable_variables("deepq")
+                self.params = tf_util.get_trainable_vars("deepq")
 
                 # Initialize the parameters and copy them to the target network.
                 tf_util.initialize(self.sess)
@@ -303,7 +303,7 @@ class DQN(OffPolicyRLModel):
 
         return actions, None
 
-    def action_probability(self, observation, state=None, mask=None, actions=None):
+    def action_probability(self, observation, state=None, mask=None, actions=None, logp=False):
         observation = np.array(observation)
         vectorized_env = self._is_vectorized_observation(observation, self.observation_space)
 
@@ -318,6 +318,8 @@ class DQN(OffPolicyRLModel):
             actions_proba = actions_proba[np.arange(actions.shape[0]), actions]
             # normalize action proba shape
             actions_proba = actions_proba.reshape((-1, 1))
+            if logp:
+                actions_proba = np.log(actions_proba)
 
         if not vectorized_env:
             if state is not None:

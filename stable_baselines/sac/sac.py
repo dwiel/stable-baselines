@@ -7,7 +7,7 @@ import warnings
 import numpy as np
 import tensorflow as tf
 
-from stable_baselines.a2c.utils import find_trainable_variables, total_episode_reward_logger
+from stable_baselines.a2c.utils import total_episode_reward_logger
 from stable_baselines.common import tf_util, OffPolicyRLModel, SetVerbosity, TensorboardWriter
 from stable_baselines.common.vec_env import VecEnv
 from stable_baselines.deepq.replay_buffer import ReplayBuffer
@@ -311,8 +311,8 @@ class SAC(OffPolicyRLModel):
                     tf.summary.scalar('learning_rate', tf.reduce_mean(self.learning_rate_ph))
 
                 # Retrieve parameters that must be saved
-                self.params = find_trainable_variables("model")
-                self.target_params = find_trainable_variables("target/values_fn/vf")
+                self.params = get_vars("model")
+                self.target_params = get_vars("target/values_fn/vf")
 
                 # Initialize Variables and target network
                 with self.sess.as_default():
@@ -497,19 +497,14 @@ class SAC(OffPolicyRLModel):
                     infos_values = []
             return self
 
-    def action_probability(self, observation, state=None, mask=None, actions=None):
-        if actions is None:
-            warnings.warn("Even thought SAC has a Gaussian policy, it cannot return a distribution as it "
-                          "is squashed by an tanh before being scaled and ouputed. Therefore 'action_probability' "
-                          "will only work with the 'actions' keyword argument being used. Returning None.")
-            return None
+    def action_probability(self, observation, state=None, mask=None, actions=None, logp=False):
+        if actions is not None:
+            raise ValueError("Error: SAC does not have action probabilities.")
 
-        observation = np.array(observation)
+        warnings.warn("Even though SAC has a Gaussian policy, it cannot return a distribution as it "
+                      "is squashed by a tanh before being scaled and ouputed.")
 
-        warnings.warn("The probabilty of taken a given action is exactly zero for a continuous distribution."
-                      "See http://blog.christianperone.com/2019/01/ for a good explanation")
-
-        return np.zeros((observation.shape[0], 1), dtype=np.float32)
+        return None
 
     def predict(self, observation, state=None, mask=None, deterministic=True):
         observation = np.array(observation)
