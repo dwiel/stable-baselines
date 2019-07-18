@@ -198,11 +198,12 @@ def summary_val(key, value):
     return tf.Summary.Value(**kwargs)
 
 
-def valid_value(value):
+def valid_float_value(value):
     """
-    returns True if the value can be successfully cast into a float
+    Returns True if the value can be successfully cast into a float
 
     :param value: (Any) the value to check
+    :return: (bool)
     """
     try:
         float(value)
@@ -226,7 +227,7 @@ class TensorBoardOutputFormat(KVWriter):
         self.writer = pywrap_tensorflow.EventsWriter(compat.as_bytes(path))
 
     def writekvs(self, kvs):
-        summary = tf.Summary(value=[summary_val(k, v) for k, v in kvs.items() if valid_value(v)])
+        summary = tf.Summary(value=[summary_val(k, v) for k, v in kvs.items() if valid_float_value(v)])
         event = event_pb2.Event(wall_time=time.time(), summary=summary)
         event.step = self.step  # is there any reason why you'd want to specify the step?
         self.writer.WriteEvent(event)
